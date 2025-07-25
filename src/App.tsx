@@ -51,16 +51,25 @@ function NavBar() {
   };
 
   return (
-    <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #ccc', width: '100vw' }}>
-      <div style={{ padding: '0 10px' }}>
+    <nav style={{ 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      alignItems: 'center', 
+      padding: '10px 20px', 
+      borderBottom: '1px solid #ccc', 
+      width: '100%',
+      boxSizing: 'border-box',
+      backgroundColor: '#fff'
+    }}>
+      <div style={{ flex: '0 0 auto' }}>
         <img src={logoSvg} alt="Evolution Stables Logo" style={{ height: '40px', verticalAlign: 'middle' }} />
       </div>
-      <div style={{ flexGrow: 1, textAlign: 'center' }}>
-        <button onClick={() => navigate('/')} style={{ margin: '0 5px' }}>Home</button>
-        <button onClick={() => navigate('/about')} style={{ margin: '0 5px' }}>About</button>
-        <button onClick={handleMyStable} style={{ margin: '0 5px' }}>MyStable</button>
+      <div style={{ flex: '1', textAlign: 'center' }}>
+        <button onClick={() => navigate('/')} style={{ margin: '0 15px' }}>Home</button>
+        <button onClick={() => navigate('/about')} style={{ margin: '0 15px' }}>About</button>
+        <button onClick={handleMyStable} style={{ margin: '0 15px' }}>MyStable</button>
       </div>
-      <div style={{ padding: '0 10px' }}>
+      <div style={{ flex: '0 0 auto' }}>
         {userSession ? <button onClick={handleLogout}>Logout</button> : <button onClick={handleLogin}>Login</button>}
       </div>
     </nav>
@@ -80,23 +89,25 @@ function MainPage() {
   };
 
   return (
-    <div style={{ width: '100vw', minHeight: '100vh', padding: '10px', overflowX: 'hidden' }}>
+    <div style={{ width: '100%', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#f8f9fa' }}>
       <NavBar />
-      <section style={{ border: '1px solid #ccc', padding: '20px', marginBottom: '10px', textAlign: 'center' }}>
-        <h1>Hero</h1>
-        <p>Welcome to Evolution Stables!</p>
-      </section>
-      <section style={{ border: '1px solid #ccc', padding: '20px', marginBottom: '10px', textAlign: 'center' }}>
-        <h1>About</h1>
-      </section>
-      <section id="mystable-section" style={{ border: '1px solid #ccc', padding: '20px', textAlign: 'center' }}>
-        <h1>MyStable</h1>
-        {userSession ? (
-          <button onClick={() => navigate('/mystable')}>Go to MyStable</button>
-        ) : (
-          <button onClick={handleLogin}>Login</button>
-        )}
-      </section>
+      <div style={{ padding: '20px' }}>
+        <section style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', marginBottom: '20px', textAlign: 'center', backgroundColor: '#fff' }}>
+          <h1>Home</h1>
+          <p>Welcome to Evolution Stables!</p>
+        </section>
+        <section style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', marginBottom: '20px', textAlign: 'center', backgroundColor: '#fff' }}>
+          <h1>About</h1>
+        </section>
+        <section id="mystable-section" style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', textAlign: 'center', backgroundColor: '#fff' }}>
+          <h1>MyStable</h1>
+          {userSession ? (
+            <button onClick={() => navigate('/mystable')}>Go to MyStable</button>
+          ) : (
+            <button onClick={handleLogin}>Login</button>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
@@ -104,9 +115,14 @@ function MainPage() {
 function MyStable() {
   const { userSession } = useAuth();
   return (
-    <div style={{ width: '100vw', padding: '20px', textAlign: 'center' }}>
-      <h1>MyStable</h1>
-      <p>Your stable is ready! User: {userSession?.user?.profile?.sub || 'Loading...'}</p>
+    <div style={{ width: '100%', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#f8f9fa' }}>
+      <NavBar />
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', backgroundColor: '#fff', maxWidth: '600px', margin: '0 auto' }}>
+          <h1>MyStable</h1>
+          <p>Your stable is ready! User: {userSession?.user?.profile?.sub || 'Loading...'}</p>
+        </div>
+      </div>
     </div>
   );
 }
