@@ -1,5 +1,6 @@
 import { useAuth } from '@futureverse/auth-react';
 import { useState, useEffect } from 'react';
+import { CustodialAuthButton } from '@futureverse/auth-ui';
 
 function MyStable() {
   const { userSession } = useAuth();
@@ -26,7 +27,8 @@ function MyStable() {
   }, [userSession?.user?.profile?.sub]);
 
   return (
-    <div style={{ width: '100%', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#f8f9fa' }}>
+    <div style={{ width: '100%', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#f8f9fa', position: 'relative' }}>
+      {/* Navigation Bar */}
       <nav style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -35,7 +37,8 @@ function MyStable() {
         borderBottom: '1px solid #ccc', 
         width: '100%',
         boxSizing: 'border-box',
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        filter: userSession ? 'none' : 'blur(3px)'
       }}>
         <div style={{ flex: '0 0 auto' }}>
           <img src="/src/assets/Logo-and-Evolution-Grey.svg" alt="Evolution Stables Logo" style={{ height: '40px', verticalAlign: 'middle' }} />
@@ -50,7 +53,13 @@ function MyStable() {
         </div>
       </nav>
       
-      <div style={{ padding: '20px', textAlign: 'center' }}>
+      {/* Main Content Area */}
+      <div style={{ 
+        padding: '20px', 
+        textAlign: 'center',
+        filter: userSession ? 'none' : 'blur(5px)',
+        minHeight: 'calc(100vh - 80px)'
+      }}>
         <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', backgroundColor: '#fff', maxWidth: '800px', margin: '0 auto' }}>
           <h1>MyStable</h1>
           <p>Your stable is ready! User: {userSession?.user?.profile?.sub || 'Loading...'}</p>
@@ -93,6 +102,26 @@ function MyStable() {
           </section>
         </div>
       </div>
+
+      {/* Login Overlay for Unauthenticated Users */}
+      {!userSession && (
+        <div style={{ 
+          position: 'absolute', 
+          top: '50%', 
+          left: '50%', 
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: '#fff',
+          padding: '30px',
+          borderRadius: '8px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          textAlign: 'center',
+          zIndex: 1000
+        }}>
+          <h2>Authentication Required</h2>
+          <p>Please log in to view your stable and manage your assets.</p>
+          <CustodialAuthButton label="Login to MyStable" />
+        </div>
+      )}
     </div>
   );
 }

@@ -1,10 +1,10 @@
 // App.tsx
-import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { FutureverseAuthProvider } from '@futureverse/auth-react';
 import { FutureverseAuthClient } from '@futureverse/auth-react/auth';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useAuth } from '@futureverse/auth-react';
+import { AuthUiProvider, DefaultTheme, CustodialAuthButton } from '@futureverse/auth-ui';
 import logoSvg from './assets/Logo-and-Evolution-Grey.svg';
 import MyStable from './MyStable';
 
@@ -17,22 +17,9 @@ const authClient = new FutureverseAuthClient({
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { userSession } = useAuth();
-  return userSession ? <>{children}</> : <Navigate to="/" />;
-}
-
 function NavBar() {
   const navigate = useNavigate();
-  const { userSession, authClient, signIn } = useAuth();
-
-  const handleLogin = async () => {
-    try {
-      await signIn({ authFlow: 'redirect' });
-    } catch (error) {
-      console.error('Sign in error:', error);
-    }
-  };
+  const { userSession, authClient } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -43,12 +30,7 @@ function NavBar() {
   };
 
   const handleMyStable = () => {
-    if (userSession) {
-      navigate('/mystable');
-    } else {
-      const element = document.getElementById('mystable-section');
-      if (element) element.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate('/mystable');
   };
 
   return (
@@ -71,23 +53,15 @@ function NavBar() {
         <button onClick={handleMyStable} style={{ margin: '0 15px' }}>MyStable</button>
       </div>
       <div style={{ flex: '0 0 auto' }}>
-        {userSession ? <button onClick={handleLogout}>Logout</button> : <button onClick={handleLogin}>Login</button>}
+        {userSession ? <button onClick={handleLogout}>Logout</button> : <CustodialAuthButton label="Login" />}
       </div>
     </nav>
   );
 }
 
 function MainPage() {
-  const { userSession, signIn } = useAuth();
+  const { userSession } = useAuth();
   const navigate = useNavigate();
-
-  const handleLogin = async () => {
-    try {
-      await signIn({ authFlow: 'redirect' });
-    } catch (error) {
-      console.error('Sign in error:', error);
-    }
-  };
 
   return (
     <div style={{ width: '100%', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#f8f9fa' }}>
@@ -105,7 +79,7 @@ function MainPage() {
           {userSession ? (
             <button onClick={() => navigate('/mystable')}>Go to MyStable</button>
           ) : (
-            <button onClick={handleLogin}>Login</button>
+            <CustodialAuthButton label="Login" />
           )}
         </section>
       </div>
@@ -118,17 +92,28 @@ function AppContent() {
     <Routes>
       <Route path="/" element={<MainPage />} />
       <Route path="/about" element={<MainPage />} />
-      <Route path="/mystable" element={<ProtectedRoute><MyStable /></ProtectedRoute>} />
+      <Route path="/mystable" element={<MyStable />} />
       <Route path="/callback" element={<div>Authenticating...</div>} />
     </Routes>
   );
 }
 
 export default function App() {
+  // Create theme configuration that defaults to Web2 authentication
+  const themeConfig = {
+    ...DefaultTheme,
+    defaultAuthOption: 'custodial' as const, // Default to Web2 (Email, Google, etc.)
+    colors: DefaultTheme.colors,
+    font: DefaultTheme.font,
+    borderRadius: DefaultTheme.borderRadius
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <FutureverseAuthProvider authClient={authClient}>
-        <AppContent />
+        <AuthUiProvider authClient={authClient} themeConfig={themeConfig}>
+          <AppContent />
+        </AuthUiProvider>
       </FutureverseAuthProvider>
     </QueryClientProvider>
   );
