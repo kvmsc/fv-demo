@@ -6,6 +6,7 @@ import { FutureverseAuthClient } from '@futureverse/auth-react/auth';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@futureverse/auth-react';
 import logoSvg from './assets/Logo-and-Evolution-Grey.svg';
+import MyStable from './MyStable';
 
 const authClient = new FutureverseAuthClient({
   clientId: 'Ug3k_XbN1wXZlPDvgK_Ge',
@@ -107,21 +108,6 @@ function MainPage() {
             <button onClick={handleLogin}>Login</button>
           )}
         </section>
-      </div>
-    </div>
-  );
-}
-
-function MyStable() {
-  const { userSession } = useAuth();
-  return (
-    <div style={{ width: '100%', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#f8f9fa' }}>
-      <NavBar />
-      <div style={{ padding: '20px', textAlign: 'center' }}>
-        <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '20px', backgroundColor: '#fff', maxWidth: '600px', margin: '0 auto' }}>
-          <h1>MyStable</h1>
-          <p>Your stable is ready! User: {userSession?.user?.profile?.sub || 'Loading...'}</p>
-        </div>
       </div>
     </div>
   );
