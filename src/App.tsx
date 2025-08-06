@@ -1,12 +1,13 @@
 // App.tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { FutureverseAuthProvider } from '@futureverse/auth-react';
+import { FutureverseAuthProvider, FutureverseWagmiProvider } from '@futureverse/auth-react';
 import { FutureverseAuthClient } from '@futureverse/auth-react/auth';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useAuth } from '@futureverse/auth-react';
 import { AuthUiProvider, DefaultTheme, CustodialAuthButton } from '@futureverse/auth-ui';
 import logoSvg from './assets/Logo-and-Evolution-Grey.svg';
 import MyStable from './MyStable';
+import { createWagmiConfig } from '@futureverse/auth-react/wagmi';
 
 const authClient = new FutureverseAuthClient({
   clientId: 'Ug3k_XbN1wXZlPDvgK_Ge',
@@ -17,9 +18,16 @@ const authClient = new FutureverseAuthClient({
 
 const queryClient = new QueryClient();
 
+export const getWagmiConfig = async () => {
+  return createWagmiConfig({
+    authClient,
+  }) as Promise<any>;
+};
+
+
 function NavBar() {
   const navigate = useNavigate();
-  const { userSession, authClient } = useAuth();
+  const { userSession, authClient, signIn } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -34,12 +42,12 @@ function NavBar() {
   };
 
   return (
-    <nav style={{ 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'center', 
-      padding: '10px 20px', 
-      borderBottom: '1px solid #ccc', 
+    <nav style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '10px 20px',
+      borderBottom: '1px solid #ccc',
       width: '100%',
       boxSizing: 'border-box',
       backgroundColor: '#fff'
@@ -53,14 +61,14 @@ function NavBar() {
         <button onClick={handleMyStable} style={{ margin: '0 15px' }}>MyStable</button>
       </div>
       <div style={{ flex: '0 0 auto' }}>
-        {userSession ? <button onClick={handleLogout}>Logout</button> : <CustodialAuthButton label="Login" />}
+        {userSession ? <button onClick={handleLogout}>Logout</button> : <button onClick={signIn}>Login</button>}
       </div>
     </nav>
   );
 }
 
 function MainPage() {
-  const { userSession } = useAuth();
+  const { userSession, signIn } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -79,7 +87,7 @@ function MainPage() {
           {userSession ? (
             <button onClick={() => navigate('/mystable')}>Go to MyStable</button>
           ) : (
-            <CustodialAuthButton label="Login" />
+            <button onClick={signIn}>Login</button>
           )}
         </section>
       </div>
@@ -110,11 +118,15 @@ export default function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <FutureverseAuthProvider authClient={authClient}>
-        <AuthUiProvider authClient={authClient} themeConfig={themeConfig}>
-          <AppContent />
-        </AuthUiProvider>
-      </FutureverseAuthProvider>
+      <FutureverseWagmiProvider
+        getWagmiConfig={getWagmiConfig}
+      >
+        <FutureverseAuthProvider authClient={authClient}>
+          <AuthUiProvider authClient={authClient} themeConfig={themeConfig}>
+            <AppContent />
+          </AuthUiProvider>
+        </FutureverseAuthProvider>
+      </FutureverseWagmiProvider>
     </QueryClientProvider>
   );
 }
